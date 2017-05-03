@@ -8,6 +8,8 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
+import it.polito.tdp.db.CountryDao;
+
 public class Model {
 	
 	private UndirectedGraph<Country, DefaultEdge> graph  ;
@@ -18,9 +20,14 @@ public class Model {
 	
 	public void creaGrafo() {
 		
+		CountryDao dao = new CountryDao() ;
+		
 		// crea i vertici del grafo
 		Graphs.addAllVertices(graph, dao.listCountry()) ;
+	
+		System.out.println(graph);
 		
+		/*
 		// crea gli archi del grafo -- versione 1
 		for(Country c1: graph.vertexSet()) {
 			for(Country c2: graph.vertexSet()) {
@@ -43,6 +50,7 @@ public class Model {
 		for(CountryPair cp = dao.listCoppieCountryAdiacenti()) {
 			graph.addEdge(cp.getC1(), cp.getC2()) ;
 		}
+		*/
 		
 		/** esempio visita
 		BreadthFirstIterator<Country, DefaultEdge> bfv =
