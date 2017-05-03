@@ -6,7 +6,6 @@ import org.jgrapht.Graphs;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
-import org.jgrapht.traverse.BreadthFirstIterator;
 
 import it.polito.tdp.db.CountryDao;
 
@@ -18,16 +17,17 @@ public class Model {
 		this.graph = new SimpleGraph<>(DefaultEdge.class) ;
 	}
 	
-	public void creaGrafo() {
+	/**
+	 * Creazione del grafo CountryBorders.
+	 * Prima versione: per ogni coppia di vertici, chiedo al database se esiste un arco.
+	 */
+	public void creaGrafo1() {
 		
 		CountryDao dao = new CountryDao() ;
 		
 		// crea i vertici del grafo
 		Graphs.addAllVertices(graph, dao.listCountry()) ;
 	
-		System.out.println(graph);
-		
-		/*
 		// crea gli archi del grafo -- versione 1
 		for(Country c1: graph.vertexSet()) {
 			for(Country c2: graph.vertexSet()) {
@@ -38,29 +38,46 @@ public class Model {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Creazione del grafo CountryBorders.
+	 * Seconda versione: per ogni vertice, chiedo al database la lista dei vertici ad esso confinanti.
+	 */
+	public void creaGrafo2() {
 		
+		CountryDao dao = new CountryDao() ;
+		
+		// crea i vertici del grafo
+		Graphs.addAllVertices(graph, dao.listCountry()) ;
+	
 		// crea gli archi del grafo -- versione 2
 		for(Country c: graph.vertexSet()) {
 			List<Country> adiacenti = dao.listAdiacenti(c) ;
 			for(Country c2: adiacenti)
 				graph.addEdge(c, c2) ;
 		}
+	}
+	
+	/**
+	 * Creazione del grafo CountryBorders.
+	 * Terza versione: una sola volta, chiedo al database l'elenco delle coppie di vertici confinanti.
+	 */
+	public void creaGrafo3() {
 		
+		CountryDao dao = new CountryDao() ;
+		
+		// crea i vertici del grafo
+		Graphs.addAllVertices(graph, dao.listCountry()) ;
+	
 		// crea gli archi del grafo -- versione 3
-		for(CountryPair cp = dao.listCoppieCountryAdiacenti()) {
+		for(CountryPair cp : dao.listCoppieCountryAdiacenti()) {
 			graph.addEdge(cp.getC1(), cp.getC2()) ;
 		}
-		*/
-		
-		/** esempio visita
-		BreadthFirstIterator<Country, DefaultEdge> bfv =
-				new BreadthFirstIterator<>(graph, c1) ;
-		while(bfv.hasNext()) {
-			//System.out.println(bfv.next());
-			visited.add(bfv.next()) ;
-		} **/
-		
-		
+	}
+
+	public void printStats() {
+		System.out.format("Grafo: Vertici %d, Archi %d\n", graph.vertexSet().size(), graph.edgeSet().size());
 	}
 
 }
